@@ -1,26 +1,35 @@
+#include <stdio.h>
+#include "abstractions.h"
 #include "miniaudio.h"
 
-#include <stdio.h>
+ma_engine engine;
+ma_sound sound;
 
 int main()
 {
-    ma_result result;
-    ma_engine engine;
+    init_sound_engine();
 
-    result = ma_engine_init(NULL, &engine);
-    if (result != MA_SUCCESS) {
-        return -1;
-    }
+    play_sound("/Users/daniel/Documents/ninjatuna.wav");
 
-    ma_sound sound;
-    ma_sound_init_from_file(&engine, "/Users/daniel/Documents/sample.wav", 0, NULL, NULL, &sound);
-    ma_sound_set_looping(&sound, 1);
-    ma_sound_start(&sound);
+    printf("Press Enter to start new sound...");
+    getchar();
+
+    play_sound("/Users/daniel/Documents/ninjatuna.wav");
+
+    printf("Press Enter to stop sound...");
+    getchar();
+
+    stop_sound();
+
+    printf("Press Enter to start sound again...");
+    getchar();
+
+    play_sound("/Users/daniel/Documents/ninjatuna.wav");
 
     printf("Press Enter to quit...");
     getchar();
 
-    ma_engine_uninit(&engine);
+    stop_sound_engine();
 
     return 0;
 }

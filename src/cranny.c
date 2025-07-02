@@ -1,35 +1,39 @@
-#include <stdio.h>
 #include "abstractions.h"
 #include "miniaudio.h"
+#include "path_utils.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <unistd.h>
 
-ma_engine engine;
-ma_sound sound;
+const ma_engine g_engine;
+const ma_sound g_sound;
 
-int main()
-{
+int main() {
+    // Init miniaudio
     init_sound_engine();
 
-    play_sound("/Users/daniel/Documents/ninjatuna.wav");
+    // Init misc values
+    const char *const tracks_path = get_tracks_path();
+    int cur_hour = -1;
 
-    printf("Press Enter to start new sound...");
-    getchar();
-
-    play_sound("/Users/daniel/Documents/ninjatuna.wav");
-
-    printf("Press Enter to stop sound...");
-    getchar();
-
-    stop_sound();
-
-    printf("Press Enter to start sound again...");
-    getchar();
-
-    play_sound("/Users/daniel/Documents/ninjatuna.wav");
-
-    printf("Press Enter to quit...");
-    getchar();
+    // Main loop
+    while (true) {
+        int new_cur_hour = get_current_hour();
+        if (cur_hour != new_cur_hour) {
+            char sound_path_buf[MAX_PATH_LENGTH];
+            strcpy(sound_path_buf, tracks_path);
+            strcat(sound_path_buf, "/");
+            sprintf(sound_path_buf + strlen(sound_path_buf), "%d",
+                    new_cur_hour);
+            printf("Playing %s\n", sound_path_buf);
+            play_sound(sound_path_buf);
+        }
+        cur_hour = new_cur_hour;
+        sleep(MAIN_LOOP_DELAY);
+    }
 
     stop_sound_engine();
-
     return 0;
 }

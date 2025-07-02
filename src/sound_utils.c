@@ -1,14 +1,7 @@
-#include "abstractions.h"
+#include "sound_utils.h"
 #include "cranny.h"
 #include "miniaudio.h"
 #include <stdlib.h>
-#include <time.h>
-
-int get_current_hour(void) {
-    time_t cur_time = time(NULL);
-    struct tm *local_time = localtime(&cur_time);
-    return local_time->tm_hour;
-}
 
 void init_sound_engine(void) {
     ma_result result;

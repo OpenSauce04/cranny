@@ -1,0 +1,1 @@
+int get_current_hour(void);

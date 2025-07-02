@@ -20,11 +20,12 @@ int main() {
     char tracks_directory_buf[MAX_PATH_LENGTH];
     get_tracks_path(tracks_directory_buf);
     int cur_hour = -1;
+    int first_loop = true;
 
     // Main loop
     while (true) {
         int new_hour = get_current_hour();
-        if (cur_hour != new_hour) {
+        if (new_hour != cur_hour) {
             // Update current hour
             cur_hour = new_hour;
 
@@ -34,10 +35,32 @@ int main() {
             strcat(track_path_buf, "/");
             sprintf(track_path_buf + strlen(track_path_buf), "%d", cur_hour);
 
-            // Print message
+            // Get human time
             char human_time_buf[HUMAN_TIME_BUFFER_SIZE];
             hour_to_am_pm(human_time_buf, cur_hour);
-            printf(SEPARATOR_STRING "\nIt is currently %s.\nPlaying track %d.\n.", human_time_buf, cur_hour);
+
+            // Get emoji for current time
+            char cur_celestial_emoji_buf[8];
+            get_current_celestial_emoji(cur_celestial_emoji_buf);
+
+            // Print message
+            char time_descriptor_buf[10];
+            char extra_time_padding_buf[4] = "";
+            if (first_loop) {
+                strcpy(time_descriptor_buf, "currently");
+                first_loop = false;
+            } else {
+                strcpy(time_descriptor_buf, "now");
+                strcpy(extra_time_padding_buf, "   ");
+                printf(SEPARATOR_STRING "\n");
+            }
+
+            printf("\n"
+                   "           %s\n"
+                   "  %sIt is %s %s.\n"
+                   "    Playing track %d.\n\n",
+                   cur_celestial_emoji_buf, extra_time_padding_buf,
+                   time_descriptor_buf, human_time_buf, cur_hour);
 
             play_sound(track_path_buf);
         }

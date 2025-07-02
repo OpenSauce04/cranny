@@ -1,6 +1,6 @@
 #define MAIN_LOOP_DELAY 1
 #define MAX_PATH_LENGTH 255
 
-char *get_config_path(void);
-char *get_home_path(void);
-char *get_tracks_path(void);
+void get_config_path(char *buf);
+void get_home_path(char *buf);
+void get_tracks_path(char *buf);

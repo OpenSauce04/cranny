@@ -5,14 +5,12 @@
 #include <string.h>
 #include <unistd.h>
 
-char *get_config_path(void) {
-    static char config_path_buf[MAX_PATH_LENGTH];
-    strcpy(config_path_buf, get_home_path());
-    strcat(config_path_buf, "/.config/cranny");
-    return config_path_buf;
+void get_config_path(char *buf) {
+    get_home_path(buf);
+    strcat(buf, "/.config/cranny");
 }
 
-char *get_home_path(void) {
+void get_home_path(char *buf) {
     uid_t uid = getuid();
     struct passwd *pw = getpwuid(uid);
 
@@ -21,12 +19,10 @@ char *get_home_path(void) {
         exit(1);
     }
 
-    return pw->pw_dir;
+    strcpy(buf, pw->pw_dir);
 }
 
-char *get_tracks_path(void) {
-    static char tracks_path_buf[MAX_PATH_LENGTH];
-    strcpy(tracks_path_buf, get_config_path());
-    strcat(tracks_path_buf, "/tracks");
-    return tracks_path_buf;
+void get_tracks_path(char *buf) {
+    get_config_path(buf);
+    strcat(buf, "/tracks");
 }

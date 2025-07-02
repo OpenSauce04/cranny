@@ -1,4 +1,6 @@
 #include "miniaudio.h"
 
-ma_engine g_engine;
-ma_sound g_sound;
+#define SEPARATOR_STRING "--------------------"
+
+const ma_engine g_engine;
+const ma_sound g_sound;

@@ -9,8 +9,8 @@
 #include <strings.h>
 #include <unistd.h>
 
-const ma_engine g_engine;
-const ma_sound g_sound;
+ma_engine g_engine;
+ma_sound g_sound;
 
 int main() {
     // Init miniaudio

@@ -1,4 +1,4 @@
-CC = gcc
+CC = cc
 CFLAGS = -O2 -Wall -Wextra -Werror
 SRCDIR = src
 BUILDDIR = build
@@ -9,17 +9,17 @@ TARGET = $(BUILDDIR)/cranny
 
 all: $(TARGET)
 
-$(TARGET): $(BUILDDIR) $(OBJECTSDIR) $(OBJECTS)
+$(TARGET): $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS)
 
-$(OBJECTSDIR)/%.o: $(SRCDIR)/%.c
+$(OBJECTSDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILDDIR):
-	mkdir $(BUILDDIR)
-
-$(OBJECTSDIR):
-	mkdir $(OBJECTSDIR)
+	@mkdir -p $@
 
 clean:
 	rm -rf $(BUILDDIR)/*
+
+.PHONY: all clean

@@ -1,8 +1,8 @@
 #include "cranny.h"
-#include "miniaudio.h"
 #include "path_utils.h"
 #include "sound_utils.h"
 #include "time_utils.h"
+#include "vendor/miniaudio/miniaudio.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 ma_engine g_engine;
+ma_resource_manager g_resource_manager;
 ma_sound g_sound;
 
 int main() {

@@ -5,9 +5,9 @@
 #include <string.h>
 #include <unistd.h>
 
-void get_config_path(char *buf) {
+void get_data_path(char *buf) {
     get_home_path(buf);
-    strcat(buf, "/.config/cranny");
+    strcat(buf, "/.local/share/cranny");
 }
 
 void get_home_path(char *buf) {
@@ -23,6 +23,6 @@ void get_home_path(char *buf) {
 }
 
 void get_tracks_path(char *buf) {
-    get_config_path(buf);
+    get_data_path(buf);
     strcat(buf, "/tracks");
 }

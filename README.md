@@ -2,7 +2,7 @@
 
 Command-line hourly music player
 
-<img width="350" alt="Screenshot of Cranny running in the MacOS terminal" src="https://github.com/user-attachments/assets/4e288c26-33b4-4a3c-ae07-46a075a89b41" />
+<img width="350" alt="Screenshot of Cranny running in the MacOS terminal" src="https://github.com/user-attachments/assets/9f198aa2-d2ea-4445-ac09-ec8105040b82" />
 
 ## What?
 

@@ -46,11 +46,11 @@ char *moon_emoji(int p) {
     case 2:
         return "\xf0\x9f\x8c\x93";
     case 3:
-        return "\xf0\x9f\x8c\x95";
-    case 4:
-        return "\xf0\x9f\x8c\x96";
-    case 5:
         return "\xf0\x9f\x8c\x94";
+    case 4:
+        return "\xf0\x9f\x8c\x95";
+    case 5:
+        return "\xf0\x9f\x8c\x96";
     case 6:
         return "\xf0\x9f\x8c\x97";
     case 7:

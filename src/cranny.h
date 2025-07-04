@@ -2,6 +2,6 @@
 
 #define SEPARATOR_STRING "-------------------------"
 
-ma_engine g_engine;
-ma_resource_manager g_resource_manager;
-ma_sound g_sound;
+extern ma_engine g_engine;
+extern ma_resource_manager g_resource_manager;
+extern ma_sound g_sound;

@@ -12,6 +12,8 @@ TARGET = $(BUILDDIR)/cranny
 ifeq ($(shell uname -s),Darwin)
 	CFLAGS += -I$(shell brew --prefix libvorbis)/include -I$(shell brew --prefix libogg)/include
 	LINKERFLAGS = -L$(shell brew --prefix libvorbis)/lib -lvorbisfile
+else
+	LINKERFLAGS = -lm -lvorbisfile
 endif
 
 all: $(TARGET)

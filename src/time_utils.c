@@ -20,7 +20,9 @@ int get_current_hour(void) {
 }
 
 void hour_to_am_pm(char *buf, int hour) {
-    if (hour > 12) {
+    if (hour == 0) {
+        sprintf(buf, "12");
+    } else if (hour > 12) {
         sprintf(buf, "%d", hour - 12);
     } else {
         sprintf(buf, "%d", hour);

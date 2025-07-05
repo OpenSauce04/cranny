@@ -54,8 +54,16 @@ jobs:
       TARGET: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install tools
-        run: brew install libvorbis
+      - name: Install tools (x86_64)
+        if: ${{ matrix.target == 'x86_64' }}
+        run: |
+          brew fetch --bottle-tag=big_sur libvorbis
+          brew reinstall --force-bottle "$(brew --cache libvorbis --bottle-tag=big_sur)"
+      - name: Install tools (arm64)
+        if: ${{ matrix.target == 'arm64' }}
+        run: |
+          brew fetch --bottle-tag=arm64_big_sur libvorbis
+          brew reinstall --force-bottle "$(brew --cache libvorbis --bottle-tag=arm64_big_sur)"
       - name: Build
         run: |
           cc --version

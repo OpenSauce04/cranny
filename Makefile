@@ -29,7 +29,7 @@ $(OBJECTSDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 
 # Linking stage
 $(TARGET): $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJECTS)
+	$(CC) -o $@ $(OBJECTS) $(LDFLAGS)
 
 clean:
 	rm -rf $(BUILDDIR)/*

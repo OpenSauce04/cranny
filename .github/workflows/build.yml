@@ -1,0 +1,48 @@
+name: cranny-build
+
+on: [push]
+
+jobs:
+  linux:
+    runs-on: ${{ matrix.os }}
+    env:
+      TARGET: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: gcc-x86_64
+            os: ubuntu-24.04
+            arch: amd64
+          - target: gcc-arm64
+            os: ubuntu-24.04-arm
+            arch: arm64
+          - target: clang-x86_64
+            os: ubuntu-24.04
+            arch: amd64
+          - target: clang-arm64
+            os: ubuntu-24.04-arm
+            arch: arm64
+    container:
+      image: opensauce04/cranny-build:latest
+    steps:
+      - name: Clone
+        run: |
+          git clone --depth=1 https://github.com/OpenSauce04/cranny
+      - name: Set cc to clang
+        if: ${{ matrix.target == 'clang-x86_64' || matrix.target == 'clang-arm64' }}
+        run: update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100
+      - name: Build
+        working-directory: ./cranny
+        run: |
+          cc --version
+          make -j$(nproc)
+      - name: Move binary to artifacts directory
+        run: |
+          mkdir -p artifacts
+          cp cranny/build/cranny artifacts/
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: cranny-linux-${{ env.TARGET }}
+          path: artifacts/

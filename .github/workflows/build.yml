@@ -14,13 +14,25 @@ jobs:
           - target: gcc-x86_64
             os: ubuntu-24.04
             arch: amd64
+          - target: gcc-x86_64-static
+            os: ubuntu-24.04
+            arch: amd64
           - target: gcc-arm64
+            os: ubuntu-24.04-arm
+            arch: arm64
+          - target: gcc-arm64-static
             os: ubuntu-24.04-arm
             arch: arm64
           - target: clang-x86_64
             os: ubuntu-24.04
             arch: amd64
+          - target: clang-x86_64-static
+            os: ubuntu-24.04
+            arch: amd64
           - target: clang-arm64
+            os: ubuntu-24.04-arm
+            arch: arm64
+          - target: clang-arm64-static
             os: ubuntu-24.04-arm
             arch: arm64
     container:
@@ -28,16 +40,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set cc to clang
-        if: ${{ matrix.target == 'clang-x86_64' || matrix.target == 'clang-arm64' }}
+        if: ${{ contains(matrix.target, 'clang') }}
         run: update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100
-      - name: Build
+      - name: Build (dynamic)
+        if: ${{ !contains(matrix.target, 'static') }}
+        run: |
+          cc --version
+          make build-dynamic -j$(nproc)
+      - name: Build (static)
+        if: ${{ contains(matrix.target, 'static') }}
         run: |
           cc --version
           make build-static -j$(nproc)
       - name: Move binary to artifacts directory
         run: |
           mkdir -p artifacts
-          cp build/cranny artifacts/
+          cp build/bin/*/cranny artifacts/
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
@@ -45,38 +63,43 @@ jobs:
           path: artifacts/
 
   macos:
-    runs-on: ${{ (matrix.target == 'x86_64' && 'macos-13') || 'macos-latest' }}
+    runs-on: ${{ (contains(matrix.target, 'x86_64') && 'macos-13') || 'macos-latest' }}
     strategy:
       fail-fast: false
       matrix:
-        target: ["x86_64", "arm64"]
+        target: ["x86_64", "x86_64-static", "arm64", "arm64-static"]
     env:
       TARGET: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies (x86_64)
-        if: ${{ matrix.target == 'x86_64' }}
+        if: ${{ contains(matrix.target, 'x86_64') }}
         run: |
           brew fetch --bottle-tag=ventura libogg libvorbis
           brew install --force-bottle "$(brew --cache libogg --bottle-tag=ventura)"
           brew install --force-bottle "$(brew --cache libvorbis --bottle-tag=ventura)"
       - name: Install dependencies (arm64)
-        if: ${{ matrix.target == 'arm64' }}
+        if: ${{ contains(matrix.target, 'arm64') }}
         run: |
           brew fetch --bottle-tag=arm64_ventura libogg libvorbis
           brew install --force-bottle "$(brew --cache libogg --bottle-tag=arm64_ventura)"
           brew install --force-bottle "$(brew --cache libvorbis --bottle-tag=arm64_ventura)"
-      - name: Build
+      - name: Build (dynamic)
+        if: ${{ !contains(matrix.target, 'static') }}
+        run: |
+          cc --version
+          make build-dynamic -j$(nproc)
+      - name: Build (static)
+        if: ${{ contains(matrix.target, 'static') }}
         run: |
           cc --version
           make build-static -j$(nproc)
       - name: Move binary to artifacts directory
         run: |
           mkdir -p artifacts
-          cp build/cranny artifacts/
+          cp build/bin/*/cranny artifacts/
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: cranny-macos-${{ env.TARGET }}
           path: artifacts/
-

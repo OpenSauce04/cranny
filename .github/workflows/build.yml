@@ -33,7 +33,7 @@ jobs:
       - name: Build
         run: |
           cc --version
-          make -j$(nproc)
+          make build-static -j$(nproc)
       - name: Move binary to artifacts directory
         run: |
           mkdir -p artifacts
@@ -69,7 +69,7 @@ jobs:
       - name: Build
         run: |
           cc --version
-          make -j$(nproc)
+          make build-static -j$(nproc)
       - name: Move binary to artifacts directory
         run: |
           mkdir -p artifacts

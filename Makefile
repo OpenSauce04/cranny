@@ -5,11 +5,13 @@ LDFLAGS = -flto -lm
 ifeq ($(shell uname -s),Darwin)
 	CFLAGS += -mmacosx-version-min=13.0
 	LDFLAGS += -mmacosx-version-min=13.0
-	STATICLIBS = $(shell brew --prefix libvorbis)/lib/libvorbis.a \
+	DYNAMIC_LINK_ARGS = -L$(shell brew --prefix libvorbis)/lib -lvorbisfile
+	STATIC_LINK_ARGS = $(shell brew --prefix libvorbis)/lib/libvorbis.a \
 	             $(shell brew --prefix libvorbis)/lib/libvorbisfile.a \
 	             $(shell brew --prefix libogg)/lib/libogg.a
 else
-	LDFLAGS += -lvorbisfile -lvorbis -logg -static
+	LDFLAGS += -lvorbisfile
+	STATIC_LINK_ARGS = -lvorbis -logg -static
 endif
 
 # Find dependencies
@@ -18,29 +20,40 @@ ifeq ($(shell uname -s),Darwin)
 endif
 
 # Files and directory variables
-SRCDIR = src
-BUILDDIR = build
-OBJECTSDIR = $(BUILDDIR)/objects
-SOURCES = $(shell find $(SRCDIR) -type f -name '*.c')
-OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJECTSDIR)/%.o, $(SOURCES))
-TARGET = $(BUILDDIR)/cranny
+SRC_DIR = src
+BUILD_DIR = build
+OBJECTS_DIR = $(BUILD_DIR)/objects
+SOURCES = $(shell find $(SRC_DIR) -type f -name '*.c')
+OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJECTS_DIR)/%.o, $(SOURCES))
+TARGET = cranny
+DYNAMIC_TARGET = $(BUILD_DIR)/bin/dynamic/$(TARGET)
+STATIC_TARGET = $(BUILD_DIR)/bin/static/$(TARGET)
 
-all: $(TARGET)
+# --= Recipes =--
+all: build-dynamic
+
+build-dynamic: $(DYNAMIC_TARGET)
+build-static: $(STATIC_TARGET)
 
 # Initialize directories
-$(BUILDDIR):
+$(BUILD_DIR):
 	@mkdir -p $@
 
 # Compilation stage
-$(OBJECTSDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
+$(OBJECTS_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Linking stage
-$(TARGET): $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(STATICLIBS) $(LDFLAGS)
+$(DYNAMIC_TARGET): $(OBJECTS)
+	@mkdir -p $(@D)
+	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) $(DYNAMIC_LINK_ARGS)
+
+$(STATIC_TARGET): $(OBJECTS)
+	@mkdir -p $(@D)
+	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) $(STATIC_LINK_ARGS)
 
 clean:
-	rm -rf $(BUILDDIR)/*
+	rm -rf $(BUILD_DIR)/*
 
 .PHONY: all clean

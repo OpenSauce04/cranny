@@ -11,9 +11,9 @@ TARGET = $(BUILDDIR)/cranny
 # TODO: Support other *nixes
 ifeq ($(shell uname -s),Darwin)
 	CFLAGS += -I$(shell brew --prefix libvorbis)/include -I$(shell brew --prefix libogg)/include
-	LINKERFLAGS = -L$(shell brew --prefix libvorbis)/lib -lvorbisfile
+	LDFLAGS = -L$(shell brew --prefix libvorbis)/lib -lvorbisfile
 else
-	LINKERFLAGS = -lm -lvorbisfile
+	LDFLAGS = -lm -lvorbisfile
 endif
 
 all: $(TARGET)
@@ -29,7 +29,7 @@ $(OBJECTSDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 
 # Linking stage
 $(TARGET): $(OBJECTS)
-	$(CC) $(LINKERFLAGS) -o $@ $(OBJECTS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJECTS)
 
 clean:
 	rm -rf $(BUILDDIR)/*

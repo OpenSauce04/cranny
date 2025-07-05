@@ -1,7 +1,7 @@
 # Set up compiler variables
 CC = cc
-CFLAGS = -O2 -Wall -Wextra -Werror
-LDFLAGS = -lm -lvorbisfile
+CFLAGS = -O3 -flto -Wall -Wextra -Werror
+LDFLAGS = -flto -lm -lvorbisfile
 ifeq ($(shell uname -s),Darwin)
 	CFLAGS += -mmacosx-version-min=11.0
 	LDFLAGS += -mmacosx-version-min=11.0

@@ -26,23 +26,47 @@ jobs:
     container:
       image: opensauce04/cranny-build:latest
     steps:
-      - name: Clone
-        run: |
-          git clone --depth=1 https://github.com/OpenSauce04/cranny
+      - uses: actions/checkout@v4
       - name: Set cc to clang
         if: ${{ matrix.target == 'clang-x86_64' || matrix.target == 'clang-arm64' }}
         run: update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100
       - name: Build
-        working-directory: ./cranny
         run: |
           cc --version
           make -j$(nproc)
       - name: Move binary to artifacts directory
         run: |
           mkdir -p artifacts
-          cp cranny/build/cranny artifacts/
+          cp build/cranny artifacts/
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: cranny-linux-${{ env.TARGET }}
           path: artifacts/
+
+  macos:
+    runs-on: ${{ (matrix.target == 'x86_64' && 'macos-13') || 'macos-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["x86_64", "arm64"]
+    env:
+      TARGET: ${{ matrix.target }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install tools
+        run: brew install libvorbis
+      - name: Build
+        run: |
+          cc --version
+          make -j$(nproc)
+      - name: Move binary to artifacts directory
+        run: |
+          mkdir -p artifacts
+          cp build/cranny artifacts/
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: cranny-macos-${{ env.TARGET }}
+          path: artifacts/
+

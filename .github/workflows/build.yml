@@ -54,16 +54,18 @@ jobs:
       TARGET: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install tools (x86_64)
+      - name: Install dependencies (x86_64)
         if: ${{ matrix.target == 'x86_64' }}
         run: |
-          brew fetch --bottle-tag=big_sur libvorbis
-          brew reinstall --force-bottle "$(brew --cache libvorbis --bottle-tag=big_sur)"
-      - name: Install tools (arm64)
+          brew fetch --bottle-tag=ventura libogg libvorbis
+          brew install --force-bottle "$(brew --cache libogg --bottle-tag=ventura)"
+          brew install --force-bottle "$(brew --cache libvorbis --bottle-tag=ventura)"
+      - name: Install dependencies (arm64)
         if: ${{ matrix.target == 'arm64' }}
         run: |
-          brew fetch --bottle-tag=arm64_big_sur libvorbis
-          brew reinstall --force-bottle "$(brew --cache libvorbis --bottle-tag=arm64_big_sur)"
+          brew fetch --bottle-tag=arm64_ventura libogg libvorbis
+          brew install --force-bottle "$(brew --cache libogg --bottle-tag=arm64_ventura)"
+          brew install --force-bottle "$(brew --cache libvorbis --bottle-tag=arm64_ventura)"
       - name: Build
         run: |
           cc --version

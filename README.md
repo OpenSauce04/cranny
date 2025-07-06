@@ -14,11 +14,20 @@ This functionality is inspired by the music of the Animal Crossing series, where
 
 ## Where?
 
-Currently, I am only building Cranny with Unix-like operating systems in mind. This includes, MacOS, Linux and the various BSDs.
+The currently known supported platforms are listed below.
 
-Windows is notably absent from the list of supported operating systems, and this is simply due to my personal preference of operating systems.
+Any platforms or architectures which aren't on this list have unknown support:
 
-If someone contributes code of an acceptable quality which allows the program to support Windows, I would be more than happy to pull it, but otherwise Windows support is on a "whenever I feel like getting around to it" basis.
+|Platform              |Supported?|
+|----------------------|----------|
+|Linux (x86_64, ARM64) |✅        |
+|MacOS (x86_64, ARM64) |✅        |
+|Android (Termux ARM64)|✅        |
+|Windows               |❌        |
+
+Windows is notably absent from the list of supported operating systems. This is due to the program being written with Unix-like operating systems in mind, and adapting the code to work on Windows will take a bit of effort.
+
+If someone contributes code of an acceptable quality which allows Cranny to run on Windows, I will pull it, but otherwise Windows support is on a "whenever I feel like getting around to it" basis.
 
 ## Why?
 

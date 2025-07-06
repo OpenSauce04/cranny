@@ -110,12 +110,21 @@ jobs:
 
   # Adapted from https://github.com/robertkirkman/termux-on-gha
   termux:
-    runs-on: ubuntu-24.04-arm
+    strategy:
+      matrix:
+        include:
+          - target: x86_64
+            os: ubuntu-24.04
+            arch: x86_64
+          - target: arm64
+            os: ubuntu-24.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.os }}
     # prepare writable volume prefix mount for actions/upload-artifact,
     # based on the higher-profile workaround for 32-bit GNU/Linux containers explained here
     # https://github.com/actions/upload-artifact/issues/616#issuecomment-2350667347
     container:
-      image: termux/termux-docker:aarch64
+      image: termux/termux-docker:${{ matrix.arch }}
       volumes:
         - /tmp/node20:/__e/node20
     # approximate environment variables for actions that can't be forced to use entrypoint.sh
@@ -162,5 +171,5 @@ jobs:
           cp build/bin/*/cranny artifacts/
       - uses: actions/upload-artifact@v4.6.0
         with:
-          name: cranny-termux-arm64
+          name: cranny-termux-${{ matrix.target }}
           path: artifacts/

@@ -90,12 +90,12 @@ jobs:
         if: ${{ !contains(matrix.target, 'static') }}
         run: |
           cc --version
-          make build-dynamic -j$(nproc)
+          make build-dynamic -j$(sysctl -n hw.logicalcpu)
       - name: Build (static)
         if: ${{ contains(matrix.target, 'static') }}
         run: |
           cc --version
-          make build-static -j$(nproc)
+          make build-static -j$(sysctl -n hw.logicalcpu)
       - name: Move binary to artifacts directory
         if: ${{ contains(matrix.target, 'static') }}
         run: |

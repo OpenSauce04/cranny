@@ -107,3 +107,60 @@ jobs:
         with:
           name: cranny-macos-${{ env.TARGET }}
           path: artifacts/
+
+  # Adapted from https://github.com/robertkirkman/termux-on-gha
+  termux:
+    runs-on: ubuntu-24.04-arm
+    # prepare writable volume prefix mount for actions/upload-artifact,
+    # based on the higher-profile workaround for 32-bit GNU/Linux containers explained here
+    # https://github.com/actions/upload-artifact/issues/616#issuecomment-2350667347
+    container:
+      image: termux/termux-docker:aarch64
+      volumes:
+        - /tmp/node20:/__e/node20
+    # approximate environment variables for actions that can't be forced to use entrypoint.sh
+    env:
+      TERMUX_MAIN_PACKAGE_FORMAT: debian
+      ANDROID_ROOT: /system
+      ANDROID_DATA: /data
+      PREFIX: /data/data/com.termux/files/usr
+      HOME: /data/data/com.termux/files/home
+      PATH: /data/data/com.termux/files/usr/bin
+      TMPDIR: /data/data/com.termux/files/usr/tmp
+      LANG: en_US.UTF-8
+      TZ: UTC
+    steps:
+      - name: Set up Termux package mirror
+        run: ln -sf ${PREFIX}/etc/termux/mirrors/default ${PREFIX}/etc/termux/chosen_mirrors
+      - name: Upgrade packages
+        run: /entrypoint.sh bash -c "yes | pkg upgrade -y"
+      # actions/checkout will "think" that termux's tar binary isn't executable if it doesn't have
+      # executable bit actually set for all users, since even though that permissions restriction
+      # doesn't actually apply to the root user (at least on Android), GitHub Actions' internal
+      # source code doesn't "care" and would refuse to run the binary anyway.
+      # relevant internal source code of GitHub Actions:
+      # https://github.com/actions/toolkit/blob/930c89072712a3aac52d74b23338f00bb0cfcb24/packages/io/src/io-util.ts#L167-L177
+      - name: Fix executable bit for prefix binaries
+        run: chmod -R o+x ${PREFIX}/bin
+      - name: Install dependencies
+        run: |
+          # Required for actions/checkout and actions/upload-artifact
+          /entrypoint.sh pkg install -y nodejs-lts
+          ln -sf ${PREFIX}/bin /__e/node20/bin
+          # Actual project dependencies
+          /entrypoint.sh pkg install -y clang libvorbis make
+      - uses: actions/checkout@v4.2.2
+      - name: Fix permissions of checked out repository
+        run: chown -R 1000:1000 .
+      - name: Build
+        run: |
+          cc --version
+          make build-dynamic -j$(nproc)
+      - name: Move binary to artifacts directory
+        run: |
+          mkdir -p artifacts
+          cp build/bin/*/cranny artifacts/
+      - uses: actions/upload-artifact@v4.6.0
+        with:
+          name: cranny-termux-arm64
+          path: artifacts/

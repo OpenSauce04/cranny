@@ -1,6 +1,6 @@
 # Set up compiler variables
 CC = cc
-CFLAGS = -O3 -flto -Wall -Wextra -Werror
+CFLAGS = -O3 -flto=jobserver -Wall -Wextra -Werror
 LDFLAGS = -flto -lm
 ifeq ($(shell uname -s),Darwin)
 	CFLAGS += -mmacosx-version-min=13.0

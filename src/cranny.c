@@ -1,8 +1,12 @@
 #include "cranny.h"
+#include "input_utils.h"
+#include "keycodes.h"
+#include "math_utils.h"
 #include "path_utils.h"
 #include "sound_utils.h"
 #include "time_utils.h"
 #include "vendor/miniaudio/miniaudio.h"
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,16 +16,30 @@
 ma_engine g_engine;
 ma_resource_manager g_resource_manager;
 ma_sound g_sound;
+float g_volume = 1.0;
+
+static inline void print_volume() {
+    printf(CLEAR_LINE PREVIOUS_LINE CLEAR_LINE "      Volume: %d%%" NEWLINE,
+           (int)round(g_volume * 100));
+    fflush(stdout);
+}
 
 int main() {
     // Init miniaudio
     init_sound_engine();
+
+    // Set up terminal for raw input
+    setup_termio();
 
     // Init misc values
     char tracks_directory_buf[MAX_PATH_LENGTH];
     get_tracks_path(tracks_directory_buf);
     int cur_hour = -1;
     int first_loop = true;
+
+    // Show controls
+    printf("  , Volume down  |  . Volume up  |  Ctrl+C Exit" NEWLINE
+               SEPARATOR_STRING SEPARATOR_STRING NEWLINE);
 
     // Main loop
     while (true) {
@@ -53,19 +71,36 @@ int main() {
             } else {
                 strcpy(time_descriptor_buf, "now");
                 strcpy(extra_time_padding_buf, "   ");
-                printf(SEPARATOR_STRING "\n");
+                printf(
+                    PREVIOUS_LINE CLEAR_LINE NEWLINE SEPARATOR_STRING NEWLINE);
             }
 
-            printf("\n"
-                   "           %s\n"
-                   "  %sIt is %s %s.\n"
-                   "    Playing track %d.\n\n",
+            printf(NEWLINE "           %s" NEWLINE "  %sIt is %s %s." NEWLINE
+                           "    Playing track %d." NEWLINE NEWLINE,
                    cur_celestial_emoji_buf, extra_time_padding_buf,
                    time_descriptor_buf, human_time_buf, cur_hour);
+            print_volume();
 
             play_sound(track_path_buf);
         }
-        sleep(MAIN_LOOP_DELAY);
+
+        char input;
+        read(STDIN_FILENO, &input, 1);
+
+        switch (input) {
+        case COMMA_KEYCODE: // Volume down
+            g_volume -= VOLUME_INCREMENT;
+            break;
+        case PERIOD_KEYCODE: // Volume up
+            g_volume += VOLUME_INCREMENT;
+            break;
+        }
+
+        if (input == COMMA_KEYCODE || input == PERIOD_KEYCODE) {
+            g_volume = clamp(g_volume, 0.0, 2.0);
+            ma_sound_set_volume(&g_sound, g_volume);
+            print_volume();
+        }
     }
 
     stop_sound_engine();

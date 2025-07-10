@@ -1,0 +1,2 @@
+#define COMMA_KEYCODE 44
+#define PERIOD_KEYCODE 46

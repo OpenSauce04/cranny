@@ -19,9 +19,13 @@ ma_sound g_sound;
 float g_volume = 1.0;
 
 static inline void print_volume() {
-    printf(CLEAR_LINE PREVIOUS_LINE CLEAR_LINE LEFT_PADDING
-           "    Volume: %d%%" NEWLINE,
+    // clang-format off
+    printf(CLEAR_LINE PREVIOUS_LINE
+           CLEAR_LINE PREVIOUS_LINE
+           NEWLINE
+           CLEAR_LINE LEFT_PADDING "    Volume: %d%%" NEWLINE,
            (int)round(g_volume * 100));
+    // clang-format on
     fflush(stdout);
 }
 
@@ -39,8 +43,11 @@ int main() {
     int first_loop = true;
 
     // Show controls
-    printf("  , Volume down  |  . Volume up  |  Ctrl+C Exit" NEWLINE
+    // clang-format off
+    printf(NEWLINE
+           "  , Volume down  |  . Volume up  |  Ctrl+C Exit" NEWLINE
            "-------------------------------------------------" NEWLINE);
+    // clang-format on
 
     // Main loop
     while (true) {
@@ -68,18 +75,20 @@ int main() {
             if (first_loop) {
                 first_loop = false;
             } else {
-                printf(
-                    CLEAR_LINE
-                    PREVIOUS_LINE CLEAR_LINE
-                    PREVIOUS_LINE CLEAR_LINE
-                    PREVIOUS_LINE CLEAR_LINE
-                    PREVIOUS_LINE CLEAR_LINE);
+                printf(CLEAR_LINE
+                       PREVIOUS_LINE CLEAR_LINE
+                       PREVIOUS_LINE CLEAR_LINE
+                       PREVIOUS_LINE CLEAR_LINE
+                       PREVIOUS_LINE CLEAR_LINE
+                       PREVIOUS_LINE CLEAR_LINE
+                       PREVIOUS_LINE CLEAR_LINE);
             }
 
-            printf(
+            printf(NEWLINE
                    LEFT_PADDING "         %s" NEWLINE
                    LEFT_PADDING "It is currently %s." NEWLINE
                    LEFT_PADDING "  Playing track %d." NEWLINE
+                   NEWLINE
                    NEWLINE,
                    cur_celestial_emoji_buf, human_time_buf,
                    cur_hour);

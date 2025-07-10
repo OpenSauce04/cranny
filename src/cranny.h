@@ -1,7 +1,7 @@
 #include "vendor/miniaudio/miniaudio.h"
 
 #define CLEAR_LINE "\x1b[2K"
-#define LEFT_PADDING "                "
+#define LEFT_PADDING "              "
 #define NEWLINE "\r\n"
 #define PREVIOUS_LINE "\x1b[1F"
 

@@ -25,7 +25,7 @@ void init_sound_engine(void) { // TODO: Cleanup
         ma_resource_manager_init(&resourceManagerConfig, &g_resource_manager);
     if (result != MA_SUCCESS) {
         printf("Failed to initialize resource manager.\n");
-        exit(-1);
+        exit(1);
     }
 
     engineConfig = ma_engine_config_init();
@@ -34,7 +34,7 @@ void init_sound_engine(void) { // TODO: Cleanup
     result = ma_engine_init(&engineConfig, &g_engine);
     if (result != MA_SUCCESS) {
         printf("Failed to initialize sound engine.\n");
-        exit(-1);
+        exit(1);
     }
 }
 
@@ -44,7 +44,8 @@ void play_sound(char *path) {
     ma_result result;
     result = ma_sound_init_from_file(&g_engine, path, 0, NULL, NULL, &g_sound);
     if (result != MA_SUCCESS) {
-        printf("Failed to load sound: %s\n", path);
+        printf("Failed to load sound: %s", path);
+        fflush(stdout);
     }
     ma_sound_set_volume(&g_sound, g_volume);
     ma_sound_set_looping(&g_sound, true);

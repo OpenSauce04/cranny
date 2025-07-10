@@ -19,7 +19,8 @@ ma_sound g_sound;
 float g_volume = 1.0;
 
 static inline void print_volume() {
-    printf(CLEAR_LINE PREVIOUS_LINE CLEAR_LINE "      Volume: %d%%" NEWLINE,
+    printf(CLEAR_LINE PREVIOUS_LINE CLEAR_LINE LEFT_PADDING
+           "    Volume: %d%%" NEWLINE,
            (int)round(g_volume * 100));
     fflush(stdout);
 }
@@ -39,7 +40,7 @@ int main() {
 
     // Show controls
     printf("  , Volume down  |  . Volume up  |  Ctrl+C Exit" NEWLINE
-               SEPARATOR_STRING SEPARATOR_STRING NEWLINE);
+           "-------------------------------------------------" NEWLINE);
 
     // Main loop
     while (true) {
@@ -62,30 +63,36 @@ int main() {
             char cur_celestial_emoji_buf[8];
             get_current_celestial_emoji(cur_celestial_emoji_buf);
 
+            // clang-format off
             // Print message
-            char time_descriptor_buf[10];
-            char extra_time_padding_buf[4] = "";
             if (first_loop) {
-                strcpy(time_descriptor_buf, "currently");
                 first_loop = false;
             } else {
-                strcpy(time_descriptor_buf, "now");
-                strcpy(extra_time_padding_buf, "   ");
                 printf(
-                    PREVIOUS_LINE CLEAR_LINE NEWLINE SEPARATOR_STRING NEWLINE);
+                    CLEAR_LINE
+                    PREVIOUS_LINE CLEAR_LINE
+                    PREVIOUS_LINE CLEAR_LINE
+                    PREVIOUS_LINE CLEAR_LINE
+                    PREVIOUS_LINE CLEAR_LINE);
             }
 
-            printf(NEWLINE "           %s" NEWLINE "  %sIt is %s %s." NEWLINE
-                           "    Playing track %d." NEWLINE NEWLINE,
-                   cur_celestial_emoji_buf, extra_time_padding_buf,
-                   time_descriptor_buf, human_time_buf, cur_hour);
+            printf(
+                   LEFT_PADDING "         %s" NEWLINE
+                   LEFT_PADDING "It is currently %s." NEWLINE
+                   LEFT_PADDING "  Playing track %d." NEWLINE
+                   NEWLINE,
+                   cur_celestial_emoji_buf, human_time_buf,
+                   cur_hour);
+            // clang-format on
             print_volume();
 
             play_sound(track_path_buf);
         }
 
         char input;
-        read(STDIN_FILENO, &input, 1);
+        if (read(STDIN_FILENO, &input, 1) == -1) {
+            continue;
+        }
 
         switch (input) {
         case COMMA_KEYCODE: // Volume down

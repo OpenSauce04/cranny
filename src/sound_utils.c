@@ -1,6 +1,7 @@
 #include "sound_utils.h"
 #include "cranny.h"
 #include "vendor/miniaudio/miniaudio.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -45,7 +46,8 @@ void play_sound(char *path) {
     if (result != MA_SUCCESS) {
         printf("Failed to load sound: %s\n", path);
     }
-    ma_sound_set_looping(&g_sound, 1);
+    ma_sound_set_volume(&g_sound, g_volume);
+    ma_sound_set_looping(&g_sound, true);
     ma_sound_start(&g_sound);
 }
 

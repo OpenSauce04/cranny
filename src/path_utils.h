@@ -1,4 +1,3 @@
-#define MAIN_LOOP_DELAY 1
 #define MAX_PATH_LENGTH 255
 
 void get_data_path(char *buf);

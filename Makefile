@@ -5,12 +5,12 @@ LDFLAGS = -flto -lm
 ifeq ($(shell uname -s),Darwin)
 	CFLAGS += -mmacosx-version-min=13.0
 	LDFLAGS += -mmacosx-version-min=13.0
-	DYNAMIC_LINK_ARGS = -L$(shell brew --prefix libvorbis)/lib -lvorbisfile
+	DYNAMIC_LINK_ARGS = -L$(shell brew --prefix libvorbis)/lib -lvorbis -lvorbisfile
 	STATIC_LINK_ARGS = $(shell brew --prefix libvorbis)/lib/libvorbis.a \
 	             $(shell brew --prefix libvorbis)/lib/libvorbisfile.a \
 	             $(shell brew --prefix libogg)/lib/libogg.a
 else
-	LDFLAGS += -lvorbisfile
+	LDFLAGS += -lvorbis -lvorbisfile
 	STATIC_LINK_ARGS = -lvorbis -logg -static
 endif
 

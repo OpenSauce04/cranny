@@ -6,12 +6,15 @@
 #include "sound_utils.h"
 #include "time_utils.h"
 #include "vendor/miniaudio/miniaudio.h"
+#include "version.h"
+#include <getopt.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <vorbis/codec.h>
 
 ma_engine g_engine;
 ma_resource_manager g_resource_manager;
@@ -29,7 +32,30 @@ static inline void print_volume() {
     fflush(stdout);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    // Check for command line options
+    { // scope
+        int option_index = 0;
+        struct option long_options[] = {
+            {"version", no_argument, 0, 'v'},
+        };
+
+        while (optind < argc) {
+            int arg = getopt_long(argc, argv, "v", long_options, &option_index);
+            if (arg != -1) {
+                switch (arg) {
+                case 'v':
+                    printf("cranny " CRANNY_VERSION_STRING
+                           "\n------------------\n"
+                           "miniaudio %s\n"
+                           "%s\n",
+                           ma_version_string(), vorbis_version_string());
+                    return 0;
+                }
+            }
+        }
+    }
+
     // Init miniaudio
     init_sound_engine();
 

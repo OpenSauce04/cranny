@@ -6,9 +6,9 @@ Command-line hourly music player
 
 ## What?
 
-Cranny is a simple music player which runs from the command line, with a twist.
+`cranny` is a simple music player which runs from the command line, with a twist.
 
-Unlike typical music players, users pre-provide Cranny with 24 music tracks, one for each hour of the day, and the track associated with the current hour of the day is played on loop until the time changes to the next hour.
+Unlike typical music players, users pre-provide `cranny` with 24 music tracks, one for each hour of the day, and the track associated with the current hour of the day is played on loop until the time changes to the next hour.
 
 This functionality is inspired by the music of the Animal Crossing series, where each hour of the day has a unique piece of music which plays depending on the current time.
 
@@ -18,20 +18,20 @@ The currently known supported platforms are listed below.
 
 Any platforms or architectures which aren't on this list have unknown support:
 
-|Platform              |Supported?|
-|----------------------|----------|
-|Linux (x86_64, ARM64) |✅        |
-|MacOS (x86_64, ARM64) |✅        |
-|Android (Termux ARM64)|✅        |
-|Windows               |❌        |
+| Platform                       | Supported? |
+|--------------------------------|------------|
+| Linux (x86_64, ARM64)          | ✅         |
+| MacOS (x86_64, ARM64)          | ✅         |
+| Android (Termux x86_64, ARM64) | ✅         |
+| Windows                        | ❌         |
 
 Windows is notably absent from the list of supported operating systems. This is due to the program being written with Unix-like operating systems in mind, and adapting the code to work on Windows will take a bit of effort.
 
-If someone contributes code of an acceptable quality which allows Cranny to run on Windows, I will pull it, but otherwise Windows support is on a "whenever I feel like getting around to it" basis.
+If someone contributes code of an acceptable quality which allows `cranny` to run on Windows, I will pull it, but otherwise Windows support is on a "whenever I feel like getting around to it" basis.
 
 ## Why?
 
-This piece of software was inspired by another music player named [Nook](https://github.com/mn6/nook-desktop). Unlike Cranny, which can be used with any music, Nook was specifically designed for playing hourly Animal Crossing music.
+This piece of software was inspired by another music player named [Nook](https://github.com/mn6/nook-desktop). Unlike `cranny`, which can be used with any music, Nook was specifically designed for playing hourly Animal Crossing music.
 
 For a long time I have made use of Nook, and I recently realized that its GitHub repository had become archived. The project had been unmaintained for a couple of years by that point, but the project being archived likely means that it is unlikely to ever receive more changes. This has two implications:
 
@@ -44,7 +44,7 @@ These two facts mean that Nook's days of usability are numbered. To address this
 
 ## How?
 
-Setting up Cranny involves creating symlinks inside a `tracks` directory with pre-determined filenames which match up with each hour of the day, starting from `0` which corresponds to midnight:
+Setting up `cranny` involves creating symlinks inside a `tracks` directory with pre-determined filenames which match up with each hour of the day, starting from `0` which corresponds to midnight:
 
 ```
 ~/.local/share/cranny/tracks/0
@@ -77,3 +77,23 @@ ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-11pm.ogg ~/.loc
 ```
 
 Once this has been done, simply run the `cranny` command, and the music will begin playing.
+
+## Build Instructions
+
+The process of building `cranny` is very simple.
+
+First, libvorbis and libogg development packages must be installed. The package name will vary depending on platform, but on Debian and Ubuntu these are called `libogg-dev` and `libvorbis-dev`.
+
+After these have been installed, simply run `make` from the project's root directory. There are two build options available:
+
+- `make build-dynamic`
+
+  This builds `cranny` with dynamically linked libraries, and is the default when just running `make` on its own.
+
+- `make build-static`
+
+  This builds `cranny` with statically linked libraries.
+
+  The statically linked library files for libvorbis and libogg (*.a files) must be installed, and may be missing on certain platforms.
+
+After `cranny` has finished building, it can be found at `./build/bin/<dynamic|static>/cranny`.

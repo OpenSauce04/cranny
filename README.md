@@ -82,7 +82,7 @@ Once this has been done, simply run the `cranny` command, and the music will beg
 
 The process of building `cranny` is very simple.
 
-First, libvorbis and libogg development packages must be installed. The package name will vary depending on platform, but on Debian and Ubuntu these are called `libogg-dev` and `libvorbis-dev`.
+First, the libvorbis and libogg development packages must be installed. Package names will vary by platform, but on Debian and Ubuntu these packages are called `libogg-dev` and `libvorbis-dev`.
 
 After these have been installed, simply run `make` from the project's root directory. There are two build options available:
 

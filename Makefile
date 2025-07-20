@@ -1,15 +1,19 @@
 # Set up compiler variables
 CC = cc
 CFLAGS = -O3 -flto=jobserver -Wall -Wextra -Werror
-LDFLAGS = -flto -lm
+LDFLAGS = -flto -lm -lpthread
 ifeq ($(shell uname -s),Darwin)
 	CFLAGS += -mmacosx-version-min=13.0
 	LDFLAGS += -mmacosx-version-min=13.0
 	DYNAMIC_LINK_ARGS = -L$(shell brew --prefix libvorbis)/lib -lvorbis -lvorbisfile
 	STATIC_LINK_ARGS = $(shell brew --prefix libvorbis)/lib/libvorbis.a \
-	             $(shell brew --prefix libvorbis)/lib/libvorbisfile.a \
-	             $(shell brew --prefix libogg)/lib/libogg.a
+	                   $(shell brew --prefix libvorbis)/lib/libvorbisfile.a \
+	                   $(shell brew --prefix libogg)/lib/libogg.a
 else
+	ifeq ($(shell uname -s),FreeBSD)
+		CFLAGS += -I/usr/local/include -Wno-unused-function
+		LDFLAGS += -L/usr/local/lib
+	endif
 	LDFLAGS += -lvorbis -lvorbisfile
 	STATIC_LINK_ARGS = -lvorbis -logg -static
 endif

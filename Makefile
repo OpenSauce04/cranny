@@ -1,8 +1,10 @@
 # Set up compiler variables
 CC = cc
-CFLAGS = -O3 -flto=jobserver -Wall -Wextra -Werror
-LDFLAGS = -flto -lm -lpthread
+CFLAGS = -Wall -Wextra -Werror
+LDFLAGS = -lm -lpthread
+
 ifeq ($(shell uname -s),Darwin)
+	CFLAGS += -I$(shell brew --prefix libvorbis)/include -I$(shell brew --prefix libogg)/include
 	CFLAGS += -mmacosx-version-min=13.0
 	LDFLAGS += -mmacosx-version-min=13.0
 	DYNAMIC_LINK_ARGS = -L$(shell brew --prefix libvorbis)/lib -lvorbis -lvorbisfile
@@ -18,24 +20,27 @@ else
 	STATIC_LINK_ARGS = -lvorbis -logg -static
 endif
 
-# Find dependencies
-ifeq ($(shell uname -s),Darwin)
-	CFLAGS += -I$(shell brew --prefix libvorbis)/include -I$(shell brew --prefix libogg)/include
-endif
+DEBUG_CFLAGS = $(CFLAGS) -g
+RELEASE_CFLAGS = $(CFLAGS) -O3 -flto=jobserver
+DEBUG_LDFLAGS = $(LDFLAGS)
+RELEASE_LDFLAGS = $(LDFLAGS) -flto
 
 # Files and directory variables
 SRC_DIR = src
 BUILD_DIR = build
 OBJECTS_DIR = $(BUILD_DIR)/objects
 SOURCES = $(shell find $(SRC_DIR) -type f -name '*.c')
-OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJECTS_DIR)/%.o, $(SOURCES))
+DEBUG_OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJECTS_DIR)/debug/%.o, $(SOURCES))
+RELEASE_OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJECTS_DIR)/release/%.o, $(SOURCES))
 TARGET = cranny
+DEBUG_TARGET = $(BUILD_DIR)/bin/debug/$(TARGET)
 DYNAMIC_TARGET = $(BUILD_DIR)/bin/dynamic/$(TARGET)
 STATIC_TARGET = $(BUILD_DIR)/bin/static/$(TARGET)
 
 # --= Recipes =--
 all: build-dynamic
 
+build-debug: $(DEBUG_TARGET)
 build-dynamic: $(DYNAMIC_TARGET)
 build-static: $(STATIC_TARGET)
 
@@ -44,18 +49,26 @@ $(BUILD_DIR):
 	@mkdir -p $@
 
 # Compilation stage
-$(OBJECTS_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+$(OBJECTS_DIR)/debug/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(DEBUG_CFLAGS) -c $< -o $@
+
+$(OBJECTS_DIR)/release/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	@mkdir -p $(@D)
+	$(CC) $(RELEASE_CFLAGS) -c $< -o $@
 
 # Linking stage
-$(DYNAMIC_TARGET): $(OBJECTS)
+$(DEBUG_TARGET): $(DEBUG_OBJECTS)
 	@mkdir -p $(@D)
-	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) $(DYNAMIC_LINK_ARGS)
+	$(CC) -o $@ $(DEBUG_OBJECTS) $(DEBUG_LDFLAGS) $(DYNAMIC_LINK_ARGS)
 
-$(STATIC_TARGET): $(OBJECTS)
+$(DYNAMIC_TARGET): $(RELEASE_OBJECTS)
 	@mkdir -p $(@D)
-	$(CC) -o $@ $(OBJECTS) $(LDFLAGS) $(STATIC_LINK_ARGS)
+	$(CC) -o $@ $(RELEASE_OBJECTS) $(RELEASE_LDFLAGS) $(DYNAMIC_LINK_ARGS)
+
+$(STATIC_TARGET): $(RELEASE_OBJECTS)
+	@mkdir -p $(@D)
+	$(CC) -o $@ $(RELEASE_OBJECTS) $(RELEASE_LDFLAGS) $(STATIC_LINK_ARGS)
 
 clean:
 	rm -rf $(BUILD_DIR)/*

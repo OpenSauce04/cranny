@@ -85,7 +85,7 @@ The process of building `cranny` is very simple.
 
 First, the libvorbis and libogg development packages must be installed. Package names will vary by platform, but on Debian and Ubuntu these packages are called `libogg-dev` and `libvorbis-dev`.
 
-After these have been installed, simply run `make` from the project's root directory. There are two build options available:
+After these have been installed, simply run `make` from the project's root directory. There are three build options available:
 
 - `make build-dynamic`
 
@@ -94,6 +94,10 @@ After these have been installed, simply run `make` from the project's root direc
 - `make build-static`
 
   This builds `cranny` with statically linked libraries.
+
+- `make build-debug`
+
+  This builds `cranny` with debug information. Libraries are dynamically linked.
 
   The statically linked library files for libvorbis and libogg (*.a files) must be installed, and may be missing on certain platforms.
 

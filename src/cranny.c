@@ -25,8 +25,10 @@ static inline void print_volume() {
     // clang-format off
     printf(CLEAR_LINE PREVIOUS_LINE
            CLEAR_LINE PREVIOUS_LINE
+           CLEAR_LINE PREVIOUS_LINE
            NEWLINE
-           CLEAR_LINE LEFT_PADDING "    Volume: %d%%" NEWLINE,
+           LEFT_PADDING "         Volume: %d%%" NEWLINE
+           NEWLINE,
            g_volume);
     // clang-format on
     fflush(stdout);
@@ -65,26 +67,31 @@ int main(int argc, char *argv[]) {
     // Init misc values
     char tracks_directory_buf[MAX_PATH_LENGTH];
     get_tracks_path(tracks_directory_buf);
-    int cur_hour = -1;
-    int first_loop = true;
+    short cur_hour = -1;
+    unsigned short cur_playlist = PLAYLIST_DEFAULT, new_playlist = PLAYLIST_DEFAULT;
+    bool first_loop = true;
 
     // Show controls
     // clang-format off
     printf(NEWLINE
-           "  , Volume down  |  . Volume up  |  Ctrl+C Exit" NEWLINE
+           "  , Volume down  |   . Volume up   |  cranny " CRANNY_VERSION_STRING NEWLINE
+           " < Prev playlist | > Next playlist | Ctrl+C Exit" NEWLINE
            "-------------------------------------------------" NEWLINE);
     // clang-format on
 
     // Main loop
     while (true) {
-        int new_hour = get_current_hour();
-        if (new_hour != cur_hour) {
+        short new_hour = get_current_hour();
+        if (new_hour != cur_hour || new_playlist != cur_playlist) {
             // Update current hour
             cur_hour = new_hour;
+            cur_playlist = new_playlist;
 
             // Find path for next track
             char track_path_buf[MAX_PATH_LENGTH];
             strcpy(track_path_buf, tracks_directory_buf);
+            strcat(track_path_buf, "/");
+            sprintf(track_path_buf + strlen(track_path_buf), "%d", cur_playlist);
             strcat(track_path_buf, "/");
             sprintf(track_path_buf + strlen(track_path_buf), "%d", cur_hour);
 
@@ -107,17 +114,19 @@ int main(int argc, char *argv[]) {
                        PREVIOUS_LINE CLEAR_LINE
                        PREVIOUS_LINE CLEAR_LINE
                        PREVIOUS_LINE CLEAR_LINE
+                       PREVIOUS_LINE CLEAR_LINE
                        PREVIOUS_LINE CLEAR_LINE);
             }
 
             printf(NEWLINE
-                   LEFT_PADDING "         %s" NEWLINE
-                   LEFT_PADDING "It is currently %s." NEWLINE
-                   LEFT_PADDING "  Playing track %d." NEWLINE
+                   LEFT_PADDING "              %s" NEWLINE
+                   LEFT_PADDING "     It is currently %s." NEWLINE
+                   LEFT_PADDING "Playing track %d of playlist %d." NEWLINE
+                   NEWLINE
                    NEWLINE
                    NEWLINE,
                    cur_celestial_emoji_buf, human_time_buf,
-                   cur_hour);
+                   cur_hour, cur_playlist);
             // clang-format on
             print_volume();
 
@@ -136,10 +145,18 @@ int main(int argc, char *argv[]) {
         case PERIOD_KEYCODE: // Volume up
             g_volume += VOLUME_INCREMENT;
             break;
+        case LESS_THAN_KEYCODE: // Previous playlist
+            new_playlist -= 1;
+            break;
+        case GREATER_THAN_KEYCODE: // Next playlist
+            new_playlist += 1;
+            break;
         }
 
+        g_volume = clamp(g_volume, VOLUME_MIN, VOLUME_MAX);
+        new_playlist = clamp(new_playlist, PLAYLIST_MIN, PLAYLIST_MAX);
+
         if (input == COMMA_KEYCODE || input == PERIOD_KEYCODE) {
-            g_volume = clamp(g_volume, VOLUME_MIN, VOLUME_MAX);
             ma_sound_set_volume(&g_sound, get_real_volume());
             print_volume();
         }

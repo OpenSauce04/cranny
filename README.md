@@ -32,6 +32,15 @@ Windows is notably absent from the list of supported operating systems. This is 
 
 If someone contributes code of an acceptable quality which allows `cranny` to run on Windows, I will pull it, but otherwise Windows support is on a "whenever I get around to it" basis.
 
+> [!NOTE]  
+> All of the `cranny` binaries distributed in the [Releases](https://github.com/OpenSauce04/cranny/releases) section are statically linked **except** the Termux binaries.
+>
+> When downloading `cranny` for use on Termux, make sure you install the `libvorbis` package before running `cranny`:
+> 
+> ```
+> pkg install libvorbis
+> ```
+
 ## Why?
 
 This piece of software was inspired by another music player named [Nook](https://github.com/mn6/nook-desktop). Unlike `cranny`, which can be used with any music, Nook was specifically designed for playing hourly Animal Crossing music.

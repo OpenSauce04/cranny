@@ -173,3 +173,73 @@ jobs:
         with:
           name: cranny-termux-${{ matrix.target }}
           path: artifacts/
+
+  freebsd:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["x86_64", "x86_64-static", "arm64", "arm64-static"]
+    env:
+      TARGET: ${{ matrix.target }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (x86_64, dynamic)
+        if: ${{ matrix.target == 'x86_64' }}
+        uses: vmactions/freebsd-vm@v1.2.1
+        with:
+          arch: x86_64
+          prepare: |
+            pkg update
+            pkg upgrade -y
+            pkg install -y gmake libogg libvorbis
+          run: |
+            cc --version
+            gmake build-dynamic -j$(nproc)
+      - name: Build (x86_64, static)
+        if: ${{ matrix.target == 'x86_64-static' }}
+        uses: vmactions/freebsd-vm@v1.2.1
+        with:
+          arch: x86_64
+          prepare: |
+            pkg update
+            pkg upgrade -y
+            pkg install -y gmake libogg libvorbis
+          run: |
+            cc --version
+            gmake build-static -j$(nproc)
+      - name: Build (arm64, dynamic)
+        if: ${{ matrix.target == 'arm64' }}
+        uses: vmactions/freebsd-vm@v1.2.1
+        with:
+          arch: aarch64
+          prepare: |
+            pkg update
+            pkg upgrade -y
+            pkg install -y gmake libogg libvorbis
+          run: |
+            cc --version
+            gmake build-dynamic -j$(nproc)
+      - name: Build (arm64, static)
+        if: ${{ matrix.target == 'arm64-static' }}
+        uses: vmactions/freebsd-vm@v1.2.1
+        with:
+          arch: aarch64
+          prepare: |
+            pkg update
+            pkg upgrade -y
+            pkg install -y gmake libogg libvorbis
+          run: |
+            cc --version
+            gmake build-static -j$(nproc)
+      - name: Move binary to artifacts directory
+        if: ${{ contains(matrix.target, 'static') }}
+        run: |
+          mkdir -p artifacts
+          cp build/bin/*/cranny artifacts/
+      - name: Upload
+        if: ${{ contains(matrix.target, 'static') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cranny-freebsd-${{ env.TARGET }}
+          path: artifacts/

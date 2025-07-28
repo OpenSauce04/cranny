@@ -47,7 +47,7 @@ void play_sound(char *path) {
         printf("Failed to load sound: %s", path);
         fflush(stdout);
     }
-    ma_sound_set_volume(&g_sound, g_volume);
+    ma_sound_set_volume(&g_sound, get_real_volume());
     ma_sound_set_looping(&g_sound, true);
     ma_sound_start(&g_sound);
 }

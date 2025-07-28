@@ -19,7 +19,7 @@
 ma_engine g_engine;
 ma_resource_manager g_resource_manager;
 ma_sound g_sound;
-float g_volume = 1.0;
+short g_volume = VOLUME_DEFAULT;
 
 static inline void print_volume() {
     // clang-format off
@@ -27,7 +27,7 @@ static inline void print_volume() {
            CLEAR_LINE PREVIOUS_LINE
            NEWLINE
            CLEAR_LINE LEFT_PADDING "    Volume: %d%%" NEWLINE,
-           (int)round(g_volume * 100));
+           g_volume);
     // clang-format on
     fflush(stdout);
 }
@@ -139,8 +139,8 @@ int main(int argc, char *argv[]) {
         }
 
         if (input == COMMA_KEYCODE || input == PERIOD_KEYCODE) {
-            g_volume = clamp(g_volume, 0.0, 2.0);
-            ma_sound_set_volume(&g_sound, g_volume);
+            g_volume = clamp(g_volume, VOLUME_MIN, VOLUME_MAX);
+            ma_sound_set_volume(&g_sound, get_real_volume());
             print_volume();
         }
     }

@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
             play_sound(track_path_buf);
         }
 
-        char input;
+        char input = 0;
         if (read(STDIN_FILENO, &input, 1) == -1) {
             continue;
         }

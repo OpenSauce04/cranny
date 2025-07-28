@@ -2,15 +2,17 @@
 
 Command-line hourly music player
 
-<img width="350" alt="Screenshot of Cranny running in the MacOS terminal" src="https://github.com/user-attachments/assets/ec358232-21ce-425b-853f-914efe56c086" />
+<img width="350" alt="Screenshot of Cranny running in the MacOS terminal" src="https://github.com/user-attachments/assets/29e43119-1da9-4b1f-9a06-637e7914658c" />
 
 ## What?
 
 `cranny` is a simple music player which runs from the command line, with a twist.
 
-Unlike typical music players, users pre-provide `cranny` with 24 music tracks, one for each hour of the day, and the track associated with the current hour of the day is played on loop until the time changes to the next hour.
+Unlike typical music players, users pre-provide `cranny` with one or more sets of 24 music tracks, one for each hour of the day, and the track associated with the current hour of the day is played on loop until the time changes to the next hour.
 
 This functionality is inspired by the music of the Animal Crossing series, where each hour of the day has a unique piece of music which plays depending on the current time.
+
+Multiple of these track sets can be created in the form of playlists, and users can switch between these playlists on the fly.
 
 ## Where?
 
@@ -23,12 +25,12 @@ Any platforms or architectures which aren't on this list have unknown support:
 | Linux (x86_64, ARM64)          | ✅         |
 | MacOS (x86_64, ARM64)          | ✅         |
 | Android (Termux x86_64, ARM64) | ✅         |
-| FreeBSD (x86_64)               | ✅         |
+| FreeBSD (x86_64, ARM64)        | ✅         |
 | Windows                        | ❌         |
 
 Windows is notably absent from the list of supported operating systems. This is due to the program being written with Unix-like operating systems in mind, and adapting the code to work on Windows will take a bit of effort.
 
-If someone contributes code of an acceptable quality which allows `cranny` to run on Windows, I will pull it, but otherwise Windows support is on a "whenever I feel like getting around to it" basis.
+If someone contributes code of an acceptable quality which allows `cranny` to run on Windows, I will pull it, but otherwise Windows support is on a "whenever I get around to it" basis.
 
 ## Why?
 
@@ -45,45 +47,55 @@ These two facts mean that Nook's days of usability are numbered. To address this
 
 ## How?
 
-Setting up `cranny` involves creating symlinks inside a `tracks` directory with pre-determined filenames which match up with each hour of the day, starting from `0` which corresponds to midnight:
+Setting up `cranny` involves creating symlinks inside a `tracks` directory with pre-determined filenames.
+
+Within the tracks directory, there will be one or more numbered directories, starting from `1`. These directories represent playlists, and each of them contains a complete set of tracks.
+
+In each playlist, there are 24 tracks, each of which match up with a certain hour of the day, starting from `0` which corresponds to midnight:
 
 ```
-~/.local/share/cranny/tracks/0
-~/.local/share/cranny/tracks/1
-~/.local/share/cranny/tracks/2
+~/.local/share/cranny/tracks/1/0
+~/.local/share/cranny/tracks/1/1
+~/.local/share/cranny/tracks/1/2
+
 ...
-~/.local/share/cranny/tracks/21
-~/.local/share/cranny/tracks/22
-~/.local/share/cranny/tracks/23
+
+~/.local/share/cranny/tracks/1/21
+~/.local/share/cranny/tracks/1/22
+~/.local/share/cranny/tracks/1/23
 ```
 
 To start, download the music you would like to use. `.wav`, `.ogg`, `.flac` and `.mp3` files are supported, but `.mp3` files are not recommended for music which is intended to be looped as the MP3 compression algorithm adds a small amount of silence to the start and end of tracks, stopping the loop from being seamless.
 
 For users wishing to have a similar experience to Nook, loopable hourly themes from each game in the Animal Crossing series can be downloaded in `.ogg` format [from the Internet Archive](https://archive.org/details/animal-crossing-series-hourly-themes).
 
-Once you've downloaded the music and put it in a place where you'd like to keep it, you can then begin creating the symlinks. First, create the tracks directory if it doesn't already exist:
+Once you've downloaded the music and put it in a place where you'd like to keep it, you can then begin creating the symlinks. First, create the tracks directory if it doesn't already exist, alongside the first playlist:
 
 ```
-mkdir -p ~/.local/share/cranny/tracks/
+mkdir -p ~/.local/share/cranny/tracks/1/
 ```
 Then, create a symlink for each hour from 0-23:
 ```
-ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-12am.ogg ~/.local/share/cranny/tracks/0
-ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-1am.ogg ~/.local/share/cranny/tracks/1
-ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-2am.ogg ~/.local/share/cranny/tracks/2
+ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-12am.ogg ~/.local/share/cranny/tracks/1/0
+ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-1am.ogg ~/.local/share/cranny/tracks/1/1
+ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-2am.ogg ~/.local/share/cranny/tracks/1/2
+
 ...
-ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-9pm.ogg ~/.local/share/cranny/tracks/21
-ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-10pm.ogg ~/.local/share/cranny/tracks/22
-ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-11pm.ogg ~/.local/share/cranny/tracks/23
+
+ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-9pm.ogg ~/.local/share/cranny/tracks/1/21
+ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-10pm.ogg ~/.local/share/cranny/tracks/1/22
+ln -sf ~/Music/Animal\ Crossing\ Series\ Hourly\ Themes/new-leaf-11pm.ogg ~/.local/share/cranny/tracks/1/23
 ```
 
 Once this has been done, simply run the `cranny` command, and the music will begin playing.
 
+When started, `cranny` will always initially play playlist `1`, but you can switch to a different playlist you have created using the `<` `>` keys.
+
 ## Build Instructions
 
-The process of building `cranny` is very simple.
+The process of building `cranny` is simple:
 
-First, the libvorbis and libogg development packages must be installed. Package names will vary by platform, but on Debian and Ubuntu these packages are called `libogg-dev` and `libvorbis-dev`.
+Firstly, the libvorbis and libogg development packages must be installed. Package names will vary by platform, but on Debian and Ubuntu these packages are called `libogg-dev` and `libvorbis-dev`.
 
 After these have been installed, simply run `make` from the project's root directory. There are three build options available:
 

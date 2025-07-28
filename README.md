@@ -20,13 +20,13 @@ The currently known supported platforms are listed below.
 
 Any platforms or architectures which aren't on this list have unknown support:
 
-| Platform                       | Supported? |
-|--------------------------------|------------|
-| Linux (x86_64, ARM64)          | ✅         |
-| MacOS (x86_64, ARM64)          | ✅         |
-| Android (Termux x86_64, ARM64) | ✅         |
-| FreeBSD (x86_64, ARM64)        | ✅         |
-| Windows                        | ❌         |
+| Platform                         | Supported? |
+|----------------------------------|------------|
+| Linux (x86_64, ARM64)            | ✅         |
+| MacOS (x86_64, ARM64)            | ✅         |
+| Android (Termux) (x86_64, ARM64) | ✅         |
+| FreeBSD (x86_64, ARM64).         | ✅         |
+| Windows                          | ❌         |
 
 Windows is notably absent from the list of supported operating systems. This is due to the program being written with Unix-like operating systems in mind, and adapting the code to work on Windows will take a bit of effort.
 

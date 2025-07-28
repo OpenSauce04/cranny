@@ -53,12 +53,12 @@ jobs:
           cc --version
           make build-static -j$(nproc)
       - name: Move binary to artifacts directory
-        if: ${{ contains(matrix.target, 'static') }}
+        if: ${{ contains(matrix.target, 'clang') && contains(matrix.target, 'static') }}
         run: |
           mkdir -p artifacts
           cp build/bin/*/cranny artifacts/
       - name: Upload
-        if: ${{ contains(matrix.target, 'static') }}
+        if: ${{ contains(matrix.target, 'clang') && contains(matrix.target, 'static') }}
         uses: actions/upload-artifact@v4
         with:
           name: cranny-linux-${{ env.TARGET }}
